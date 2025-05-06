@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<title>INST377 Assignment 7</title>
+
+<style>
+
+body {
+  background-color: rgb(250, 228, 199);
+}
+
+.navbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  background-color: rgb(198, 83, 61);
+  display: flex;
+  justify-content: center;
+}
+
+.navbar li, .navbar li a {
+  text-decoration: none;
+  padding: 1em;
+}
+
+.navbar li a:hover {
+  background-color: white;
+  color: black;
+}
+
+.content-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 2em;
+  width: 100%;
+}
+
+.content-container > div:has(.listen-btns) {
+  background-color: green;
+  display: inline-block;
+  text-align: center;
+  min-width: 33%;
+  color: white;
+}
+
+.listen-btns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.listen-btns a {
+  color: black;
+  background-color: white;
+  padding: 1em 2em;
+  text-decoration: none;
+  margin: 0.5em 1em;
+  border-radius: 16px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.quote-container {
+  background-color: white;
+  color: black;
+  padding: 1em;
+  border-radius: 16px;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.button-90 {
+  color: #fff;
+  padding: 15px 25px;
+  border-radius: 100px;
+  background-color: #4C43CD;
+  background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 87% at 26% 20%, rgba(255, 255, 255, 0.41) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+  box-shadow: 2px 19px 31px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+  font-size: 16px;
+
+  border: 0;
+
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+
+  cursor: pointer;
+}
+</style>
+
+<h1>INST377 - Activities</h1>
+
+<ul class="navbar">
+  <li><a href="/">Home</a></li>
+  <li><a href="/stocks">Stocks</a></li>
+  <li><a href="/dogs">Dogs</a></li>
+</ul>
+
+<h1>These are some different activities we can try!</h1>
+
+<div class="content-container">
+
+  <div class="cta-btns">
+    <a class="button-90" href="/stocks">Stocks</a>
+    <a class="button-90" href="/dogs">Dogs</a>
+  </div>
+
+  <div class="quote-container">
+    <h2>Quote of the Page Load</h2>
+    <p id="quote"></p>
+  </div>
+
+  <div>
+    <h2>Navigate using audio</h2>
+    <div class="listen-btns">
+      <a href="javascript:annyang.start()">Turn On Listening</a>
+      <a href="javascript:annyang.abort()">Turn Off Listening</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
+<script>
+if (annyang) {
+  // Let's define a command.
+  const commands = {
+    'hello': () => { alert('Hello world!'); },
+    'change the color to *color': (color) => {
+      document.body.style.backgroundColor = color;
+    },
+    'navigate to stocks': () => { window.location.href = '/stocks'; },
+    'navigate to dogs': () => { window.location.href = '/dogs'; },
+    'navigate to home': () => { window.location.href = '/'; },
+  };
+
+  // Add our commands to annyang
+  annyang.addCommands(commands);
+}
+
+fetch('https://zenquotes.io/api/random')
+  .then(response => response.json())
+  .then(data => {
+    const quote = data[0].q;
+    const author = data[0].a;
+    document.getElementById('quote').innerText = `"${quote}" - ${author}`;
+  }); 
+</script>

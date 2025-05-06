@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<title>INST377 Assignment 7</title>
+<meta charset="UTF-8">
+
+<style>
+
+body {
+  background-color: rgb(250, 228, 199);
+}
+
+.navbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  background-color: rgb(198, 83, 61);
+  display: flex;
+  justify-content: center;
+}
+
+.navbar li, .navbar li a {
+  text-decoration: none;
+  padding: 1em;
+}
+
+.navbar li a:hover {
+  background-color: white;
+  color: black;
+}
+
+#custom-btn {
+  background-color: green;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 16px;
+  padding: 1em 2em;
+  border-width: 0;
+  color: white;
+}
+
+table {
+  background-color: white;
+}
+
+img {
+  height: 128px;
+}
+
+div:has(.listen-btns) {
+  background-color: green;
+  display: inline-block;
+  text-align: center;
+  min-width: 33%;
+  color: white;
+  margin-top: 2em;
+}
+
+.listen-btns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.listen-btns a {
+  color: black;
+  background-color: white;
+  padding: 1em 2em;
+  text-decoration: none;
+  margin: 0.5em 1em;
+  border-radius: 16px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#dog-img-container {
+  height: 300px;
+  width: 500px;
+  margin: auto;
+}
+
+#dog-img-container img {
+  width: 100%;
+  height: auto;
+}
+
+#dog-breed-btns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 2em;
+  gap: 0.5em;
+}
+
+.breed-btn {
+  color: white;
+  background-color: orange;
+  border: 1px solid red;
+  border-radius: 16px;
+  padding: 1em 2em;
+  cursor: pointer;
+}
+
+.breed-btn:hover {
+  background-color: red;
+  color: white;
+}
+
+#more-breed-info {
+  background-color: white;
+  color: black;
+  padding: 1em;
+  border-radius: 16px;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+#more-breed-info:empty {
+  display: none;
+}
+
+</style>
+
+<h1>INST377 - Activities</h1>
+
+<ul class="navbar">
+  <li><a href="/">Home</a></li>
+  <li><a href="/stocks">Stocks</a></li>
+  <li><a href="/dogs">Dogs</a></li>
+</ul>
+
+<h1>Doggos! 🐶</h1>
+
+<div id="dog-img-container" data-simple-slider>
+</div>
+
+<div id="dog-breed-btns"></div>
+
+<div id="more-breed-info"></div>
+
+<div>
+  <h2>Navigate using audio</h2>
+  <div class="listen-btns">
+    <a href="javascript:annyang.start()">Turn On Listening</a>
+    <a href="javascript:annyang.abort()">Turn Off Listening</a>
+  </div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/simple-slider/1.0.0/simpleslider.min.js"></script>
+<script>
+
+  fetch('https://dog.ceo/api/breeds/image/random/10')
+    .then(response => response.json())
+    .then(data => {
+      const dogImages = data.message.map(url => `<img src="${url}" alt="Dog Image">`).join('');
+      document.querySelector('#dog-img-container').innerHTML = dogImages;
+      simpleslider.getSlider();
+    });
+
+  fetch('https://dogapi.dog/api/v2/breeds')
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      const breedNames = data.data.map(breed => breed.attributes.name);
+      const breedButtons = breedNames.map(breed => `<button class="breed-btn">${breed}</button>`);
+      document.querySelector('#dog-breed-btns').innerHTML = breedButtons.join('');
+
+      Array.from(document.querySelector('#dog-breed-btns').children).forEach((button, index) => {
+        button.addEventListener('click', () => {
+          const breed = data.data[index].attributes;
+          document.querySelector('#more-breed-info').innerHTML = `
+            <h2>${breed.name}</h2>
+            <p>Description: ${breed.description}</p>
+            <p>Min Life: ${breed.life.min}</p>
+            <p>Max Life: ${breed.life.max}</p>
+          `;
+        });
+      });
+    });
+
+if (annyang) {
+  const commands = {
+    'hello': () => { alert('Hello world!'); },
+    'change the color to *color': (color) => {
+      document.body.style.backgroundColor = color;
+    },
+    'navigate to stocks': () => { window.location.href = '/stocks'; },
+    'navigate to dogs': () => { window.location.href = '/dogs'; },
+    'navigate to home': () => { window.location.href = '/'; },
+    'load dog breed *breed': (breed) => {
+      const breedButton = Array.from(document.querySelectorAll('.breed-btn')).find(btn => btn.textContent.toLowerCase() === breed.toLowerCase());
+      breedButton.click();
+    },
+  };
+
+  annyang.addCommands(commands);
+}
+</script>
